@@ -14,6 +14,8 @@ import sellerRoute from './routes/sellerRoutes.js';
 import sqlProductRoutes from "./routes/productSQLRoutes.js";
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import { connectSQLite } from "./config/sqliteDb.js";
+import clusterRoute from './routes/clusterRoutes.js';
+
 
 const port = process.env.PORT || 5000;
 
@@ -32,6 +34,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/sellers', sellerRoute);
 app.use("/api/sql-products", sqlProductRoutes);
+app.use('/api/clusters', clusterRoute);
 app.get('/api/config/paypal', (req, res) =>
   res.send({ clientId: process.env.PAYPAL_CLIENT_ID })
 );

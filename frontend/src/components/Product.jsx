@@ -5,21 +5,23 @@ import Rating from './Rating';
 const Product = ({ product }) => {
   return (
     <Card className='my-3 p-3 rounded'>
-      <Link to={`/product/${product._id}`}>
-        <Card.Img src={product.image} variant='top' />
+      <Link to={`/product/${product.product_id}`}>
+        <Card.Img src={product.image_url} variant='top' />
       </Link>
 
       <Card.Body>
-        <Link to={`/product/${product._id}`}>
+        <Link to={`/product/${product.product_id}`}>
+        {/* <Link to={`/api/sql-products/${product.product_id}`}> */}
           <Card.Title as='div' className='product-title'>
-            <strong>{product.name}</strong>
+            <strong>{product.product_name}</strong>
           </Card.Title>
         </Link>
+        <strong>{product.product_category_name}</strong>
 
         <Card.Text as='div'>
           <Rating
-            value={product.rating}
-            text={`${product.numReviews} reviews`}
+            // value={product.rating}
+            text={`${0} reviews`}
           />
         </Card.Text>
 

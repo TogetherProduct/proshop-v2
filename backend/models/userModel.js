@@ -3,6 +3,9 @@ import bcrypt from 'bcryptjs';
 
 const userSchema = mongoose.Schema(
   {
+    _id: {
+      type: String, 
+    },
     name: {
       type: String,
       required: true,
@@ -21,6 +24,14 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    city: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true
+    }
   },
   {
     timestamps: true,
@@ -35,11 +46,12 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 // Encrypt password using bcrypt
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
-    next();
+     return next();
   }
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
 const User = mongoose.model('User', userSchema);

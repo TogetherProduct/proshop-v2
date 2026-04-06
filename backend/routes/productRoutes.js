@@ -19,6 +19,6 @@ router
   .route('/:id')
   .get(checkObjectId, getProductById)
   .put(protect, admin, checkObjectId, updateProduct)
-  .delete(protect, admin, checkObjectId, deleteProduct);
+  .delete(protect, admin, checkObjectId, deleteProduct);  
 
 export default router;

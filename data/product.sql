@@ -1,4 +1,4 @@
--- Insert sample data
+c:\Users\myngo\Downloads\_main\4\2nd\ML\project\data_processing\test_cluster_customer.json-- Insert sample data
 INSERT INTO "products" (
     "product_id", 
     "product_category_name", 
