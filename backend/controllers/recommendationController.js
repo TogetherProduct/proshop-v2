@@ -21,8 +21,7 @@ const __dirname = path.dirname(__filename);
 // @access  Public
 const getRecommendations = asyncHandler(async (req, res) => {
   const { id: productId } = req.params;
-  const { k = 10 } = req.query; // Number of recommendations
-
+  const { k = 10 } = req.query;
   try {
     const cacheKey = `rec:${productId}`;
 

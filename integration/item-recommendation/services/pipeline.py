@@ -61,13 +61,13 @@ class HybridRecommender:
         current_category = product_rows.iloc[0]['product_category_name_english']
 
         # ===== STAGE 1: APRIORI RULES =====
-        apriori_recommendations = self._stage_apriori(current_category, k, seen_ids)
+        apriori_recommendations = self._stage_apriori(current_category, k, seen_ids, max_per_category = 1)
         final_recs.extend(apriori_recommendations)
 
         # ===== STAGE 2: KNN COLLABORATIVE =====
         if len(final_recs) < k:
             collab_recommendations = self._stage_collaborative(
-                current_category, k - len(final_recs), seen_ids
+                current_category, k - len(final_recs), seen_ids, max_per_category=1
             )
             final_recs.extend(collab_recommendations)
 
@@ -80,7 +80,7 @@ class HybridRecommender:
 
         return final_recs[:k]
 
-    def _stage_apriori(self, category, max_count, seen_ids, max_per_category=3):
+    def _stage_apriori(self, category, max_count, seen_ids, max_per_category=1):
         """
         Stage 1: Get recommendations from Apriori association rules.
         Diversifies by limiting products per category to ensure multiple categories in recommendations.
@@ -169,21 +169,27 @@ class HybridRecommender:
 
         return recommendations
 
-    def _stage_content(self, product_id, current_category, max_count, seen_ids):
+    def _stage_content(self, product_id, current_category, max_count, seen_ids, max_per_category=1):
         """Stage 3: Get recommendations from content-based similarity."""
         recommendations = []
         content_recs = self.content_knn.get_recommendations(
             product_id, k=30, exclude_same_category=True
         )
 
+        category_counts = {}  # Track products per category
         for rec in content_recs:
-            if rec['product_id'] not in seen_ids:
+            rec_category = rec['category']
+            if rec_category not in category_counts:
+                category_counts[rec_category] = 0
+            
+            if rec['product_id'] not in seen_ids and category_counts[rec_category] < max_per_category:
                 recommendations.append({
                     'product_id': rec['product_id'],
                     'score': rec['score'],
                     'method': f"KNN Content (similar attributes: {rec['category']}, sim={rec['score']})"
                 })
                 seen_ids.add(rec['product_id'])
+                category_counts[rec_category] += 1
                 if len(recommendations) >= max_count:
                     return recommendations
 
