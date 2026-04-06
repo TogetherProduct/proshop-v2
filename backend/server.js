@@ -16,6 +16,8 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import { connectSQLite } from "./config/sqliteDb.js";
 import clusterRoute from './routes/clusterRoutes.js';
 
+import { initRedis, closeRedis } from './utils/redisClient.js';
+import { initScheduler, stopScheduler } from './config/scheduler.js';
 
 const port = process.env.PORT || 5000;
 
@@ -58,6 +60,37 @@ if (process.env.NODE_ENV === 'production') {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(port, () =>
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`)
-);
+const server = app.listen(port, async () => {
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`);
+
+  // Initialize Redis cache
+  console.log('\n📦 Initializing Redis...');
+  await initRedis();
+
+  // Initialize batch recommendation scheduler
+  console.log('\n⏰ Initializing scheduler...');
+  initScheduler();
+
+  console.log('\n✅ Server and dependencies initialized\n');
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('\n🛑 Server shutting down...');
+  stopScheduler();
+  await closeRedis();
+  server.close(() => {
+    console.log('✅ Server closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGTERM', async () => {
+  console.log('\n🛑 Server shutting down (SIGTERM)...');
+  stopScheduler();
+  await closeRedis();
+  server.close(() => {
+    console.log('✅ Server closed');
+    process.exit(0);
+  });
+});

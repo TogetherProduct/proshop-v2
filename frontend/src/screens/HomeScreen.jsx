@@ -13,13 +13,21 @@ import Meta from '../components/Meta';
 import { useDispatch, useSelector } from 'react-redux';
 
 const HomeScreen = () => {
-  const { pageNumber, keyword } = useParams();
   const { userInfo } = useSelector((state) => state.auth);
 
   const userId = userInfo?._id;
 
   const { data: clusterData } = useGetClusterQuery(userId, {
     skip: !userId,
+  });
+  const { pageNumber = 1, keyword } = useParams();
+
+  // Convert pageNumber to integer (it comes as string from URL)
+  const currentPage = parseInt(pageNumber) || 1;
+
+  const { data, isLoading: isNotLoggedInProductsLoading, error: isNotLoggedInProductsError } = useGetProductsQuery({
+    keyword,
+    pageNumber: currentPage,
   });
 
 
@@ -53,19 +61,41 @@ const HomeScreen = () => {
       ) : (
         <>
           <Meta />
-          <h1>Recommended For You</h1>
 
-          {products.length > 0 ? (
-            <Row>
-              {products.map((product) => (
-                <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
-                  <Product product={product} />
-                </Col>
-              ))}
-            </Row>
-          ) : (
-            <Message>No products found</Message>
-          )}
+          {
+            userId ?
+              <>
+                <h1>Recommended For You</h1>
+                {
+                  products.length > 0 ? (
+                    <Row>
+                      {products.map((product) => (
+                        <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
+                          <Product product={product} />
+                        </Col>
+                      ))}
+                    </Row>
+                  ) : (
+                    <Message>No products found</Message>
+                  )
+                }
+              </> :
+              <>
+                <h1>Latest Products</h1>
+                <Row>
+                  {data.products.map((product) => (
+                    <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
+                      <Product product={product} />
+                    </Col>
+                  ))}
+                </Row>
+              </>
+          }
+          <Paginate
+            pages={data.pages}
+            page={data.page || currentPage}
+            keyword={keyword ? keyword : ''}
+          />
         </>
       )}
     </>

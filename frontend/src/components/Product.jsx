@@ -16,7 +16,7 @@ const Product = ({ product }) => {
             <strong>{product.product_name}</strong>
           </Card.Title>
         </Link>
-        <strong>{product.product_category_name}</strong>
+        <strong>Category: {product.product_category_name}</strong>
 
         <Card.Text as='div'>
           <Rating
