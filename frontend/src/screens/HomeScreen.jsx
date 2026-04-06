@@ -10,11 +10,14 @@ import ProductCarousel from '../components/ProductCarousel';
 import Meta from '../components/Meta';
 
 const HomeScreen = () => {
-  const { pageNumber, keyword } = useParams();
+  const { pageNumber = 1, keyword } = useParams();
+  
+  // Convert pageNumber to integer (it comes as string from URL)
+  const currentPage = parseInt(pageNumber) || 1;
 
   const { data, isLoading, error } = useGetProductsQuery({
     keyword,
-    pageNumber,
+    pageNumber: currentPage,
   });
 
   return (
@@ -45,7 +48,7 @@ const HomeScreen = () => {
           </Row>
           <Paginate
             pages={data.pages}
-            page={data.page}
+            page={data.page || currentPage}
             keyword={keyword ? keyword : ''}
           />
         </>
