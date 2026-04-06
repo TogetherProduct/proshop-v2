@@ -1,6 +1,6 @@
 import { Row, Col } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import { useGetProductsByIdsQuery } from '../slices/productsApiSlice';
+import { useGetProductsByIdsQuery, useGetProductsQuery } from '../slices/productsApiSlice';
 import { useGetClusterQuery } from '../slices/clusterSlice';
 
 import { Link } from 'react-router-dom';
@@ -83,7 +83,7 @@ const HomeScreen = () => {
               <>
                 <h1>Latest Products</h1>
                 <Row>
-                  {data.products.map((product) => (
+                  {data && data.products && data.products.map((product) => (
                     <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
                       <Product product={product} />
                     </Col>
@@ -91,11 +91,11 @@ const HomeScreen = () => {
                 </Row>
               </>
           }
-          <Paginate
+          {!userId && data && <Paginate
             pages={data.pages}
             page={data.page || currentPage}
             keyword={keyword ? keyword : ''}
-          />
+          />}
         </>
       )}
     </>
