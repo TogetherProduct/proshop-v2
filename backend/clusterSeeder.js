@@ -49,8 +49,8 @@ await importClusterData()
 const createUser = async () => {
     const user = await User.create({
         _id: '91f3a63e7a6e55e11f8a41dea6bb0505',
-        name: 'Duckling Cheap',
-        email: 'yellowduckcheap@gmail.com',
+        name: 'Duckling Normal',
+        email: 'yellowducknormal@gmail.com',
         password: '123', // 
         city: 'ipira',
         state: 'BA',
@@ -59,8 +59,8 @@ const createUser = async () => {
 
     await User.create({
         _id: 'd221b067b60ae3c085fd5bde1a27e92d',
-        name: 'Duckling Normal',
-        email: 'yellowducknormal@gmail.com',
+        name: 'Duckling Cheap',
+        email: 'yellowduckcheap@gmail.com',
         password: '123', // 
         city: 'tres pontas',
         state: 'MG',
