@@ -1,0 +1,14 @@
+README_PIPELINE.md
+pyproject.toml
+item_recommendation.egg-info/PKG-INFO
+item_recommendation.egg-info/SOURCES.txt
+item_recommendation.egg-info/dependency_links.txt
+item_recommendation.egg-info/requires.txt
+item_recommendation.egg-info/top_level.txt
+services/etl.py
+services/evaluation.py
+services/hybrid_recommender.py
+services/pipeline.py
+services/recommender_items_aprori.py
+services/similar_items_knn.py
+services/storage.py

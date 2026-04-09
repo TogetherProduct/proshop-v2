@@ -16,6 +16,7 @@ const HomeScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   const userId = userInfo?._id;
+  conso
 
   const { data: clusterData } = useGetClusterQuery(userId, {
     skip: !userId,

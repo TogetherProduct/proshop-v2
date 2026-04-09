@@ -105,7 +105,7 @@ def print_comparison(results):
         print(f"   {info['desc']}")
         print(f"\n   Strengths:")
         for strength in info['strengths']:
-            print(f"      ✓ {strength}")
+            print(f"      [iconCheck] {strength}")
         print(f"\n   Weaknesses:")
         for weakness in info['weaknesses']:
             print(f"      ✗ {weakness}")
@@ -202,7 +202,7 @@ def plot_results(results):
     plt.tight_layout()
     save_path = Path('models/evaluation_plots.png')
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
-    print(f"   ✓ Plots saved to: {save_path}")
+    print(f"   [iconCheck] Plots saved to: {save_path}")
 
 
 def print_recommendations(results):

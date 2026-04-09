@@ -76,7 +76,8 @@ const callRecommenderService = async (productId, k = 10) => {
       '../../integration/item-recommendation'
     );
 
-    const pythonExe = path.join(recomPath, '.venv', 'bin', 'python3');
+    // const pythonExe = path.join(recomPath, '.venv', 'bin', 'python3');
+    const pythonExe = "integration/item-recommendation/.venv/Scripts/python.exe"
 
     const python = spawn(pythonExe, [
       path.join(recomPath, 'main.py'),

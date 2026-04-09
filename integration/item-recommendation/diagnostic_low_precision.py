@@ -38,7 +38,7 @@ class DiagnosticAnalyzer:
             self.results['apriori_check'] = 'NOT_FOUND'
             return
         
-        print(f"✓ Loading Apriori model from: {apriori_path}")
+        print(f"[iconCheck] Loading Apriori model from: {apriori_path}")
         try:
             with open(apriori_path, 'rb') as f:
                 apriori_data = pickle.load(f)
@@ -88,7 +88,7 @@ class DiagnosticAnalyzer:
             items_path = self.data_dir / "olist_order_items_dataset.csv"
             products_path = self.data_dir / "olist_products_dataset.csv"
             
-            print(f"✓ Loading datasets...")
+            print(f"[iconCheck] Loading datasets...")
             orders = pd.read_csv(orders_path)
             items = pd.read_csv(items_path)
             products = pd.read_csv(products_path)
@@ -147,7 +147,7 @@ class DiagnosticAnalyzer:
             items_path = self.data_dir / "olist_order_items_dataset.csv"
             items = pd.read_csv(items_path)
             
-            print(f"✓ Checking product→category mapping...")
+            print(f"[iconCheck] Checking product→category mapping...")
             
             # Check for missing mappings
             items_merged = items.merge(products[['product_id', 'product_category_name']], 
@@ -199,7 +199,7 @@ class DiagnosticAnalyzer:
             with open(results_path, 'r') as f:
                 results = json.load(f)
             
-            print(f"✓ Loaded evaluation results")
+            print(f"[iconCheck] Loaded evaluation results")
             print(f"\n📊 Evaluation Configuration:")
             for key in ['timestamp', 'num_samples', 'test_size', 'k_values']:
                 if key in results:
@@ -252,7 +252,7 @@ class DiagnosticAnalyzer:
             products = pd.read_csv(products_path)
             
             # Create transaction data (category-based)
-            print(f"✓ Building category-based transactions...")
+            print(f"[iconCheck] Building category-based transactions...")
             
             items_with_cat = items.merge(
                 products[['product_id', 'product_category_name']], 
@@ -347,7 +347,7 @@ class DiagnosticAnalyzer:
         if 'apriori_check' in self.results:
             print(f"2️⃣  APRIORI MODEL STATUS: {self.results['apriori_check']}")
             if self.results['apriori_check'] == 'OK':
-                print(f"    ✓ Model loaded successfully")
+                print(f"    [iconCheck] Model loaded successfully")
                 if 'apriori_content' in self.results and isinstance(self.results['apriori_content'], dict):
                     content = self.results['apriori_content']
                     categories_used = content.get('categories_above_min_support', 0)
@@ -362,7 +362,7 @@ class DiagnosticAnalyzer:
             best_precision = max((v.get('precision@5', 0) for v in metrics.values()), default=0)
             print(f"3️⃣  METRICS INTERPRETATION:")
             print(f"    - Best Precision@5: {best_precision:.4f} ({best_precision*100:.2f}%)")
-            print(f"    - Scale: [0, 1] ✓ (Correct)")
+            print(f"    - Scale: [0, 1] [iconCheck] (Correct)")
             print(f"    - Meaning: {best_precision*100:.1f}% of top-5 recommendations were relevant")
             print(f"    - Reason low: High product diversity (32k products) vs few patterns\n")
         
@@ -373,7 +373,7 @@ class DiagnosticAnalyzer:
             print(f"4️⃣  PRODUCT→CATEGORY MAPPING:")
             print(f"    - Coverage: {coverage:.1f}%")
             if coverage > 99:
-                print(f"    ✓ Mapping complete (no data loss!)")
+                print(f"    [iconCheck] Mapping complete (no data loss!)")
             else:
                 print(f"    ⚠️  Some products unmapped ({100-coverage:.1f}%)")
             print(f"    ➜ IMPACT: Apriori IS training on categories (as expected)\n")

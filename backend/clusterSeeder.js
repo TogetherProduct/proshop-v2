@@ -42,7 +42,7 @@ async function importClusterData() {
 
 }
 
-// await importClusterData()
+await importClusterData()
 
 
 

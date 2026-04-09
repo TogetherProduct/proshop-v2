@@ -119,7 +119,7 @@ class OfflineRecommendationPipeline:
         self.storage.save_models(self.hybrid, metadata)
         
         print("\n" + "=" * 70)
-        print("✓ TRAINING COMPLETE")
+        print("[iconCheck] TRAINING COMPLETE")
         print("=" * 70)
         print(f"  Models saved to: {self.storage.models_dir}")
         print(f"  Cache saved to: {self.storage.cache_dir}")
@@ -162,7 +162,7 @@ class OfflineRecommendationPipeline:
         self.storage.load_models(self.hybrid)
         
         print("\n" + "=" * 70)
-        print("✓ MODELS LOADED SUCCESSFULLY")
+        print("[iconCheck] MODELS LOADED SUCCESSFULLY")
         print("=" * 70)
         
         return self
@@ -205,7 +205,7 @@ class OfflineRecommendationPipeline:
             if (i + 1) % max(1, len(product_ids) // 10) == 0:
                 print(f"  {i + 1}/{len(product_ids)} completed ({100 * (i + 1) // len(product_ids)}%)")
         
-        print("  ✓ Batch complete")
+        print("  [iconCheck] Batch complete")
         return results
 
     def save_batch_recommendations(self, results, filename='recommendations.json'):
@@ -307,7 +307,7 @@ def main():
         all_products = pipeline.product_features['product_id'].tolist()[:100]  # Sample
         results = pipeline.batch_recommend(all_products, k=args.k)
         pipeline.save_batch_recommendations(results)
-        print(f"✓ Saved recommendations to {pipeline.storage.results_dir}")
+        print(f"[iconCheck] Saved recommendations to {pipeline.storage.results_dir}")
     
     elif args.command == 'status':
         pipeline.status()

@@ -81,7 +81,7 @@ class StrategyEvaluator:
             )
             
             self.storage.load_models(self.hybrid)
-            print("   ✓ Models loaded successfully")
+            print("   [iconCheck] Models loaded successfully")
             
         except Exception as e:
             print(f"   Could not load models: {e}")
@@ -98,7 +98,7 @@ class StrategyEvaluator:
         print(f"   Total products: {len(self.product_features)}")
         print(f"   Total transactions: {len(self.transactions)}")
         print(f"   Total categories: {self.product_features['product_category_name_english'].nunique()}")
-        print("   ✓ Setup complete\n")
+        print("   [iconCheck] Setup complete\n")
 
     def _train_models(self):
         """Train models from scratch."""
@@ -137,7 +137,7 @@ class StrategyEvaluator:
             self.product_features
         )
         
-        print("   ✓ Models trained and created")
+        print("   [iconCheck] Models trained and created")
 
     def evaluate(self, k_values=[5, 10, 15], test_size=0.2, num_samples=500):
         """
@@ -351,7 +351,7 @@ class StrategyEvaluator:
         with open(filepath, 'w') as f:
             json.dump(export_data, f, indent=2)
         
-        print(f"\n✓ Results exported to: {filepath}")
+        print(f"\n[iconCheck] Results exported to: {filepath}")
 
 
 def main():
@@ -429,7 +429,7 @@ def main():
         if args.export:
             evaluator.export_results(args.export)
         
-        print("\n✓ Evaluation complete!")
+        print("\n[iconCheck] Evaluation complete!")
         
     except Exception as e:
         print(f"\n✗ Error: {e}")
