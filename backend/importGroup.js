@@ -3,7 +3,7 @@ import csv from 'csv-parser';
 import mongoose from 'mongoose';
 import SegmentGroup from './models/customerModel.js';
 
-await mongoose.connect('mongodb://127.0.0.1:27017/test');
+await mongoose.connect('mongodb://127.0.0.1:27017/proshop_ml');
 
 const result = {
   Vip: [],
