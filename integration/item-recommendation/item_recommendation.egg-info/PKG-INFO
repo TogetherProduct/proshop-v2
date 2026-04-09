@@ -1,3 +1,18 @@
+Metadata-Version: 2.4
+Name: item-recommendation
+Version: 0.1.0
+Summary: Offline recommendation system combining Apriori, KNN Content-Based, and KNN Collaborative filtering
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: pandas>=1.3.0
+Requires-Dist: numpy>=1.20.0
+Requires-Dist: scikit-learn>=0.24.0
+Requires-Dist: efficient-apriori>=2.0.0
+Requires-Dist: pyarrow>=5.0.0
+Provides-Extra: dev
+Requires-Dist: jupyter>=1.0.0; extra == "dev"
+Requires-Dist: matplotlib>=3.3.0; extra == "dev"
+
 # Offline Recommendation System Pipeline
 
 A modular, production-ready recommendation system combining **Apriori** association rules, **KNN Content-Based**, and **KNN Collaborative** filtering into a unified hybrid recommender.

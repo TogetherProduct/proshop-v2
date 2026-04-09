@@ -152,9 +152,9 @@ The system uses machine learning models to provide personalized product recommen
 ```
 User → API Request
   ↓
-L1: Redis Cache (<10ms) ✓
+L1: Redis Cache (<10ms) [iconCheck]
   ↓ (if miss)
-L2: MongoDB Cache (100-500ms) ✓
+L2: MongoDB Cache (100-500ms) [iconCheck]
   ↓ (if miss)
 L3: On-demand Computation (2-5s)
 ```

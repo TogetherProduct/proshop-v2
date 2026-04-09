@@ -10,6 +10,7 @@ import Product from './models/productModel.js';
 import Order from './models/orderModel.js';
 import connectDB from './config/db.js';
 import { AppDataSource, connectSQLite } from './config/sqliteDb.js';
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
@@ -51,19 +52,17 @@ const importSQLProduct = async () => {
 
 const importData = async () => {
   try {
-    await Order.deleteMany();
-    await Product.deleteMany();
-    await User.deleteMany();
 
-    const createdUsers = await User.insertMany(users);
-
-    const adminUser = createdUsers[0]._id;
-
-    const sampleProducts = products.map((product) => {
-      return { ...product, user: adminUser };
+    const createdUsers = await User.create({
+      _id: '4a3ca9315b744ce9f8e9374361493884',
+      name: 'Admin User',
+      email: 'admin@email.com',
+      password: bcrypt.hashSync('123456', 10), 
+      city: 'ipira',
+      state: 'BA',
+      isAdmin: true,
     });
 
-    await Product.insertMany(sampleProducts);
 
     console.log('Data Imported!'.green.inverse);
     process.exit();
@@ -88,10 +87,11 @@ const destroyData = async () => {
 };
 
 if (process.argv[2] === '-d') {
+  clearSQLData()
   destroyData();
 } else {
   importData();
-  clearSQLData().then(() => {
-    importSQLProduct();
-  });
+  // clearSQLData().then(() => {
+  //   importSQLProduct();
+  // });
 }
