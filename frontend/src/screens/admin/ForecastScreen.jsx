@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useGetSellerForecastQuery } from '../../slices/forecastApiSlice';
+import { useState } from 'react';
 
 import {
     Chart as ChartJS,
@@ -27,10 +28,13 @@ ChartJS.register(
 export const ForecastScreen = () => {
     const { userInfo } = useSelector((state) => state.auth);
     const sellerId = userInfo?._id;
+    const [weeks, setWeeks] = useState(6);
 
-    const { data: forecastData, isLoading, error } = useGetSellerForecastQuery(sellerId, {
-        skip: !sellerId,
-    });
+
+    const { data: forecastData, isLoading, isFetching, error } = useGetSellerForecastQuery(
+        { sellerId, weeks }, 
+        { skip: !sellerId }
+    );
 
     console.log('Forecast Data:', forecastData);
 
@@ -70,17 +74,17 @@ export const ForecastScreen = () => {
                 {
                     label: 'Actual Revenue',
                     data: historicalSeries,
-                    borderColor: 'rgba(54, 162, 235, 1)', // Solid Blue
+                    borderColor: 'rgba(54, 162, 235, 1)',
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    tension: 0.3, // Adds a slight curve to the line
+                    tension: 0.3, 
                     pointRadius: 2,
                 },
                 {
                     label: 'Forecasted Revenue',
                     data: forecastSeries,
-                    borderColor: 'rgba(255, 99, 132, 1)', // Red
+                    borderColor: 'rgba(255, 99, 132, 1)',
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderDash: [5, 5], // Makes the line dashed
+                    borderDash: [5, 5], 
                     tension: 0.3,
                     pointRadius: 4,
                     pointBackgroundColor: 'rgba(255, 99, 132, 1)',
@@ -89,10 +93,9 @@ export const ForecastScreen = () => {
         };
     };
 
-    // 4. Configure Chart Options
     const chartOptions = {
         responsive: true,
-        maintainAspectRatio: false, // Allows you to set a custom height via CSS/Div
+        maintainAspectRatio: false, 
         plugins: {
             datalabels: {
                 display: false,
@@ -132,11 +135,34 @@ export const ForecastScreen = () => {
 
     return (
         <div style={{ padding: '20px' }}>
-            <h1>Revenue Forecast</h1>
 
             {!userInfo && <p>Please log in as a seller to view your forecast.</p>}
 
-            {isLoading && <h2>Building your forecast model...</h2>}
+            {userInfo && (
+                <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center' }}>
+                    <label htmlFor="weeks-select" style={{ marginRight: '10px', fontWeight: 'bold' }}>
+                        Forecast Duration:
+                    </label>
+                    <select 
+                        id="weeks-select"
+                        value={weeks} 
+                        onChange={(e) => setWeeks(Number(e.target.value))}
+                        style={{ padding: '8px 12px', borderRadius: '4px', border: '1px solid #ccc' }}
+                    >
+                        <option value={4}>4 Weeks</option>
+                        <option value={6}>6 Weeks</option>
+                        <option value={8}>8 Weeks</option>
+                        <option value={10}>10 Weeks</option>
+                        <option value={12}>12 Weeks</option>
+                        <option value={14}>14 Weeks</option>
+                        <option value={16}>16 Weeks</option>
+                        <option value={18}>18 Weeks</option>
+                        <option value={20}>20 Weeks</option>
+                    </select>
+                </div>
+            )}
+
+            {isLoading || isFetching && <h2>Building your forecast model...</h2>}
 
             {error && (
                 <div style={{ color: 'red', border: '1px solid red', padding: '10px' }}>
@@ -147,7 +173,7 @@ export const ForecastScreen = () => {
             )}
 
 
-            {!isLoading && !error && forecastData && (
+            {!isLoading && !isFetching && !error && forecastData && (
                 <div style={{ height: '500px', width: '100%', backgroundColor: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
                     <Line data={prepareChartData()} options={chartOptions} />
                 </div>

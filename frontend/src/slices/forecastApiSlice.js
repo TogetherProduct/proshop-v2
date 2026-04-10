@@ -4,8 +4,8 @@ import { SELLERS_URL } from '../constants';
 export const forecastApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getSellerForecast: builder.query({
-      query: (sellerId) => ({
-        url: `${SELLERS_URL}/${sellerId}/forecast`,
+      query: ({ sellerId, weeks }) => ({
+        url: `${SELLERS_URL}/${sellerId}/forecast?weeks=${weeks}`,
       }),
       keepUnusedDataFor: 5, 
     }),
