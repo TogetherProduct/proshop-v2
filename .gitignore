@@ -35,5 +35,6 @@ http
 integration/item-recommendation/.venv
 integration/item-recommendation/data
 integration/item-recommendation/models
+integration/data
 
 data/sqlite.db
