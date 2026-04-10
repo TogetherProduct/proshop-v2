@@ -135,6 +135,20 @@ redis-server
 ```
 
 ---
+
+
+## Revenue forecast system
+
+### Install Python Dependencies
+
+```bash
+cd integration/revenue-forecast
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -r pyproject.toml
+# try `pip install .` if the above doesn't works
+```
+---
 #
 #
 #
