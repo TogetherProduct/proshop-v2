@@ -69,18 +69,12 @@ const Header = () => {
 
               {/* Admin Links */}
               {userInfo && userInfo.isAdmin && (
-                <NavDropdown title='Admin' id='adminmenu'>
-                  <NavDropdown.Item as={Link} to='/admin/productlist'>
-                    Products
-                  </NavDropdown.Item>
-                  <NavDropdown.Item as={Link} to='/admin/orderlist'>
-                    Orders
-                  </NavDropdown.Item>
-                  <NavDropdown.Item as={Link} to='/admin/userlist'>
-                    Users
-                  </NavDropdown.Item>
+                <NavDropdown title='Seller' id='adminmenu'>
                   <NavDropdown.Item as={Link} to='/admin/customers'>
                     Customers
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to='/admin/forecast'>
+                    Forecast
                   </NavDropdown.Item>
                 </NavDropdown>
               )}

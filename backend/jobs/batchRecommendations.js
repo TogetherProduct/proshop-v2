@@ -6,6 +6,7 @@ import { setCache, clearRecommendationCache } from '../utils/redisClient.js';
 import { AppDataSource } from '../config/sqliteDb.js';
 import SqlProduct from '../models/productSQLModel.js';
 import { In } from 'typeorm';
+import os from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -76,8 +77,10 @@ const callRecommenderService = async (productId, k = 10) => {
       '../../integration/item-recommendation'
     );
 
-    // const pythonExe = path.join(recomPath, '.venv', 'bin', 'python3');
-    const pythonExe = "integration/item-recommendation/.venv/Scripts/python.exe"
+    //const pythonExe = path.join(recomPath, '.venv', 'bin', 'python3');
+    //const pythonExe = "integration/item-recommendation/.venv/Scripts/python.exe"
+
+    const pythonExe = os.platform() === 'win32' ? path.join(recomPath, '.venv', 'Scripts', 'python.exe') : path.join(recomPath, '.venv', 'bin', 'python3');
 
     const python = spawn(pythonExe, [
       path.join(recomPath, 'main.py'),

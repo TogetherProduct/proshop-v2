@@ -1,15 +1,15 @@
-import { useEffect, useState, useRef } from 'react';
-import { Row, Col, Card, ListGroup, Modal, Button,Badge } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import { Row, Col, Card, ListGroup, Modal, Button, Badge } from 'react-bootstrap';
 import Loader from '../../components/Loader';
 import Message from '../../components/Message';
 import { useGetCustomerSegmentsQuery } from '../../slices/customerApiSlice';
 
-// Import Chart.js và các thành phần cần thiết
+// Import from react-chartjs-2
+import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, PieController } from 'chart.js';
-// Import Plugin hiển thị phần trăm
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-// Đăng ký Plugin với Chart.js
+// Register plugins
 ChartJS.register(ArcElement, Tooltip, Legend, PieController, ChartDataLabels);
 
 const COLORS = ['#00C49F', '#0088FE', '#FF8042'];
@@ -18,90 +18,65 @@ const CustomerScreen = () => {
   const { data, isLoading, error, refetch } = useGetCustomerSegmentsQuery();
   const [selectedSegmentName, setSelectedSegmentName] = useState("");
   const [showModal, setShowModal] = useState(false);
-  
-  const canvasRef = useRef(null);
-  const chartInstance = useRef(null);
 
   useEffect(() => {
     refetch();
   }, [refetch]);
 
-  useEffect(() => {
-    if (isLoading || error || !data || !canvasRef.current) return;
-
-    // Hủy biểu đồ cũ nếu đã tồn tại để vẽ mới
-    if (chartInstance.current) {
-      chartInstance.current.destroy();
-    }
-
-    const ctx = canvasRef.current.getContext('2d');
-
-    // Tính tổng để tính toán phần trăm
-    const vipCount = data.Vip?.length || 0;
-    const normalCount = data.Normal?.length || 0;
-    const lowCount = data.Low?.length || 0;
-    const total = vipCount + normalCount + lowCount;
-
-    chartInstance.current = new ChartJS(ctx, {
-      type: 'pie',
-      data: {
-        labels: ['Vip', 'Normal', 'Low'],
-        datasets: [{
-          data: [vipCount, normalCount, lowCount],
-          backgroundColor: COLORS,
-          hoverOffset: 25,
-          borderWidth: 2,
-          borderColor: '#ffffff',
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { padding: 20, font: { size: 14 } }
-          },
-          // Cấu hình hiển thị phần trăm trực tiếp trên biểu đồ
-          datalabels: {
-            color: '#fff',
-            font: {
-              weight: 'bold',
-              size: 16
-            },
-            formatter: (value) => {
-              if (total === 0) return "0%";
-              return ((value / total) * 100).toFixed(1) + "%";
-            },
-            // Chỉ hiện phần trăm nếu giá trị > 0
-            display: (context) => {
-              return context.dataset.data[context.dataIndex] > 0;
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: (context) => `Số lượng: ${context.raw}`
-            }
-          }
-        },
-        onClick: (event, elements) => {
-          if (elements.length > 0) {
-            const index = elements[0].index;
-            const segments = ['Vip', 'Normal', 'Low'];
-            setSelectedSegmentName(segments[index]);
-            setShowModal(true);
-          }
-        }
-      }
-    });
-
-    return () => {
-      if (chartInstance.current) chartInstance.current.destroy();
-    };
-  }, [data, isLoading, error]);
-
   if (isLoading) return <Loader />;
   if (error) return <Message variant='danger'>{error?.data?.message || "Lỗi tải dữ liệu"}</Message>;
+
+  // 1. Calculate totals safely
+  const vipCount = data?.Vip?.length || 0;
+  const normalCount = data?.Normal?.length || 0;
+  const lowCount = data?.Low?.length || 0;
+  const total = vipCount + normalCount + lowCount;
+
+  // 2. Define Chart Data
+  const chartData = {
+    labels: ['Vip', 'Normal', 'Low'],
+    datasets: [{
+      data: [vipCount, normalCount, lowCount],
+      backgroundColor: COLORS,
+      hoverOffset: 25,
+      borderWidth: 2,
+      borderColor: '#ffffff',
+    }]
+  };
+
+  // 3. Define Chart Options
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { padding: 20, font: { size: 14 } }
+      },
+      datalabels: {
+        color: '#fff',
+        font: { weight: 'bold', size: 16 },
+        formatter: (value) => {
+          if (total === 0) return "0%";
+          return ((value / total) * 100).toFixed(1) + "%";
+        },
+        display: (context) => context.dataset.data[context.dataIndex] > 0
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => `Số lượng: ${context.raw}`
+        }
+      }
+    },
+    onClick: (event, elements) => {
+      if (elements.length > 0) {
+        const index = elements[0].index;
+        const segments = ['Vip', 'Normal', 'Low'];
+        setSelectedSegmentName(segments[index]);
+        setShowModal(true);
+      }
+    }
+  };
 
   // Cấu hình Voucher hiển thị TO và RÕ
   const config = {
@@ -141,7 +116,20 @@ const CustomerScreen = () => {
         {/* CỘT 1: BIỂU ĐỒ TRÒN CÓ PHẦN TRĂM */}
         <Col lg={5} md={12} className="d-flex flex-column align-items-center justify-content-center">
           <div style={{ height: '400px', width: '100%', maxWidth: '450px' }}>
-            <canvas ref={canvasRef}></canvas>
+           {total === 0 ? (
+              <span className="text-muted fw-bold">Chưa có dữ liệu khách hàng</span>
+            ) : (
+<Pie 
+                // 1. Tạo key động: Bất cứ khi nào số lượng thay đổi, React sẽ XÓA canvas cũ và tạo mới
+                key={`pie-chart-${vipCount}-${normalCount}-${lowCount}`} 
+                
+                // 2. Ép ChartJS phải clear instance cũ đi trước khi vẽ
+                redraw={true} 
+                
+                data={chartData} 
+                options={chartOptions} 
+              />
+            )}
           </div>
           <div className="mt-4 p-3 bg-white rounded shadow-sm border text-center w-75">
             <h5 className="mb-0 text-muted">Tổng số khách hàng</h5>

@@ -5,6 +5,8 @@ node_modules
 /node_modules
 /.pnp
 .pnp.js
+package-lock.json
+frontend/package-lock.json
 
 # testing
 /coverage
@@ -34,5 +36,11 @@ http
 integration/item-recommendation/.venv
 integration/item-recommendation/data
 integration/item-recommendation/models
+integration/data
+
+# revenue forecast
+integration/revenue-forecast/.venv
+integration/revenue-forecast/build
+integration/revenue-forecast/seller_forecaster.egg-info
 
 data/sqlite.db
