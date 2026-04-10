@@ -4,19 +4,14 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs'
 import User from './models/userModel.js';
-
-dotenv.config() // lúc này đọc root/.env OK
+import Cluster from './models/clusterModel.js'
 
 // tạo __dirname trong ES module
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-import connectDB from './config/db.js'
-import Cluster from './models/clusterModel.js'
 
-await connectDB()
-
-async function importClusterData() {
+export async function importClusterData() {
     const filePath = path.join(__dirname, 'ktdata', 'clusters.json')
 
     const rawClusters = JSON.parse(
@@ -28,68 +23,56 @@ async function importClusterData() {
         customers: c.customers,
         products: c.products,
     }))
+    await Cluster.deleteMany(); 
+    await Cluster.insertMany(clusters);
 
-    try {
-        await Cluster.deleteMany() // optional
-        await Cluster.insertMany(clusters)
-
-        console.log('Cluster Data Imported!'.green.inverse)
-        process.exit()
-    } catch (error) {
-        console.error(error)
-        process.exit(1)
-    }
-
+    console.log('Cluster Data Imported!'.green.inverse);
 }
 
 // await importClusterData()
 
 
 
-const createUser = async () => {
-    // const user = await User.create({
-    //     _id: '91f3a63e7a6e55e11f8a41dea6bb0505',
-    //     name: 'Duckling Normal',
-    //     email: 'yellowducknormal@gmail.com',
-    //     password: '123', // 
-    //     city: 'ipira',
-    //     state: 'BA',
-    //     isAdmin: false,
-    // });
+export const createUser = async () => {
+    await User.deleteMany();
 
-    // await User.create({
-    //     _id: 'd221b067b60ae3c085fd5bde1a27e92d',
-    //     name: 'Duckling Cheap',
-    //     email: 'yellowduckcheap@gmail.com',
-    //     password: '123', // 
-    //     city: 'tres pontas',
-    //     state: 'MG',
-    //     isAdmin: false,
-    // });
+    await User.create({
+        _id: '91f3a63e7a6e55e11f8a41dea6bb0505',
+        name: 'Duckling Normal',
+        email: 'yellowducknormal@gmail.com',
+        password: '123', 
+        city: 'ipira',
+        state: 'BA',
+        isAdmin: false,
+    });
 
-    // await User.create({
-    //     _id: '467975aa01ded053ddd770ac6d11abf8',
-    //     name: 'Duckling Expensive',
-    //     email: 'yellowduckexpensive@gmail.com',
-    //     password: '123', // 
-    //     city: 'sao jose do rio preto',
-    //     state: 'SP',
-    //     isAdmin: false,
-    // });
-    const user = await User.create({
+    await User.create({
+        _id: 'd221b067b60ae3c085fd5bde1a27e92d',
+        name: 'Duckling Cheap',
+        email: 'yellowduckcheap@gmail.com',
+        password: '123',  
+        city: 'tres pontas',
+        state: 'MG',
+        isAdmin: false,
+    });
+
+    await User.create({
+        _id: '467975aa01ded053ddd770ac6d11abf8',
+        name: 'Duckling Expensive',
+        email: 'yellowduckexpensive@gmail.com',
+        password: '123', 
+        city: 'sao jose do rio preto',
+        state: 'SP',
+        isAdmin: false,
+    });
+    await User.create({
         _id: '4a3ca9315b744ce9f8e9374361493884',
-        name: 'Admin',
-        email: 'admin01@gmail.com',
-        password: '123', // 
+        name: 'Seller Duckling',
+        email: 'seller@gmail.com',
+        password: '123', 
         city: 'ipira',
         state: 'BA',
         isAdmin: true,
     });
-    console.log('Users created:', user._id);
+    console.log('Users created successfully!'.green.inverse);
 };
-console.log('DB:', mongoose.connection.name);
-
-await createUser();
-// await User.deleteMany()
-
-await mongoose.connection.close(); 

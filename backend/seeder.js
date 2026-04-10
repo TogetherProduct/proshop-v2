@@ -6,26 +6,24 @@ import colors from 'colors';
 import users from './data/users.js';
 import products from './data/products.js';
 import User from './models/userModel.js';
+import SegmentGroup from './models/customerModel.js';
 import Product from './models/productModel.js';
 import Order from './models/orderModel.js';
 import connectDB from './config/db.js';
 import { AppDataSource, connectSQLite } from './config/sqliteDb.js';
-import bcrypt from 'bcryptjs';
+import { importClusterData, createUser } from './clusterSeeder.js';
+import { importSegmentData } from './importGroup.js';
 
 dotenv.config();
 
-connectDB();
+await connectDB();
 await connectSQLite();
 
 const clearSQLData = async () => {
   try {
-
-
     const clear = fs.readFileSync('./data/clear.sql', 'utf8');
-
-    console.log('Executing SQL script...'.yellow);
+    console.log('Executing SQL clear script...'.yellow);
     await AppDataSource.query(clear);
-
     console.log('SQLite Data Cleared Successfully!'.green.inverse);
   } catch (error) {
     console.error(`SQLite Clear Error: ${error}`.red.inverse);
@@ -36,62 +34,50 @@ const clearSQLData = async () => {
 // New function to import raw SQL data
 const importSQLProduct = async () => {
   try {
-
     const sqlFileContent = fs.readFileSync('./data/product.sql', 'utf8');
-
-    console.log('Executing SQL script...'.yellow);
+    console.log('Executing SQL import script...'.yellow);
     await AppDataSource.query(sqlFileContent);
-
     console.log('SQLite Data Imported Successfully!'.green.inverse);
-    process.exit();
   } catch (error) {
     console.error(`SQLite Import Error: ${error}`.red.inverse);
     process.exit(1);
   }
 };
 
-const importData = async () => {
-  try {
-
-    const createdUsers = await User.create({
-      _id: '4a3ca9315b744ce9f8e9374361493884',
-      name: 'Admin User',
-      email: 'admin@email.com',
-      password: bcrypt.hashSync('123456', 10), 
-      city: 'ipira',
-      state: 'BA',
-      isAdmin: true,
-    });
-
-
-    console.log('Data Imported!'.green.inverse);
-    process.exit();
-  } catch (error) {
-    console.error(`${error}`.red.inverse);
-    process.exit(1);
-  }
+const destroyData = async () => {
+    try {
+        await Order.deleteMany();
+        await Product.deleteMany();
+        await User.deleteMany();
+        await SegmentGroup.deleteMany(); // Added to your destroy logic
+        
+        console.log('Mongo Data Destroyed!'.red.inverse);
+        process.exit();
+    } catch (error) {
+        console.error(`${error}`.red.inverse);
+        process.exit(1);
+    }
 };
 
-const destroyData = async () => {
-  try {
-    await Order.deleteMany();
-    await Product.deleteMany();
-    await User.deleteMany();
-
-    console.log('Data Destroyed!'.red.inverse);
-    process.exit();
-  } catch (error) {
-    console.error(`${error}`.red.inverse);
-    process.exit(1);
-  }
+const importAllData = async () => {
+    try {
+        await clearSQLData();
+        await importSQLProduct();
+        
+        await createUser();
+        await importClusterData();
+        await importSegmentData();
+        
+        console.log('All Data Imported Successfully!'.green.inverse);
+        process.exit();
+    } catch (error) {
+        console.error(`Import Error: ${error}`.red.inverse);
+        process.exit(1);
+    }
 };
 
 if (process.argv[2] === '-d') {
-  clearSQLData()
-  destroyData();
+    await destroyData();
 } else {
-  importData();
-  // clearSQLData().then(() => {
-  //   importSQLProduct();
-  // });
+    await importAllData();
 }
