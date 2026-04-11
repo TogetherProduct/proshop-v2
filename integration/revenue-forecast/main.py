@@ -6,8 +6,9 @@ import pandas as pd
 import warnings
 from datetime import datetime, timezone
 from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
-# Suppress harmless statsmodels warnings so they don't corrupt the JSON output
+
 warnings.filterwarnings("ignore")
 
 class SellerForecaster:
@@ -61,11 +62,14 @@ class SellerForecaster:
             raise Exception(f"Not enough data points ({len(y)} weeks) to train the ARIMA model. Need at least 10.")
 
         # 3. Model Fit (Training on ALL available data in the past year)
-        arima_model = ARIMA(y, order=(2, 1, 1), seasonal_order=(1, 1, 1, 4))
-        arima_fit = arima_model.fit()
+        # model = ARIMA(y, order=(2, 1, 1), seasonal_order=(1, 1, 1, 4))
+        # model_fit = model.fit()
+
+        model = ExponentialSmoothing(y, trend= 'add', seasonal= 'mul', seasonal_periods = 14,  damped_trend= False, use_boxcox= False, initialization_method="estimated")
+        model_fit = model.fit()
 
         # 4. Forecast into the future
-        forecast_series = arima_fit.forecast(steps=weeks_to_predict)
+        forecast_series = model_fit.forecast(steps=weeks_to_predict)
 
         # 5. Prepare Data for JSON serialization
         # Generate an ISO 8601 UTC timestamp for when this forecast was generated
